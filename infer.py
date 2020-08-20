@@ -10,7 +10,7 @@ from Learner import face_learner
 from utils import load_facebank, draw_box_name, prepare_facebank, logging_time
 import os
 from pprint import pprint as pp
-from tqdm import tqdm as tq
+from tqdm import tqdm
 from glob import glob
 
 import time
@@ -52,14 +52,18 @@ if __name__ == '__main__':
     else:
         targets, names = load_facebank(conf)
         print('facebank loaded')
-    print(f'[Load facebank]: {time.time()-start}')
+    print(f'WorkingTime[Load facebank]: {time.time()-start}')
 
     # list image directory
     img_list = glob(args.image_dir + '**/*.jpg')
     acc = 0
     detect_err=0
     fails = []
-    for x in tq(img_list):
+    print(f"{'Found':^15}{'ID':^20}{'Result':^15}{'Score':^15}")
+
+    pbar = enumerate(img_list)
+    pbar = tqdm(pbar, total = len(img_list))
+    for i, x in pbar:
         preds = []
         label = str(os.path.dirname(x))
         label = os.path.basename(label)
@@ -84,18 +88,22 @@ if __name__ == '__main__':
                 acc += 1
             else:
                 fails.append([label,preds])
-                Image.fromarray(frame,'RGB').show()
+                # Image.fromarray(frame,'RGB').show()
         except Exception as ex:
             fails.append([label,ex])
             detect_err += 1
             # print(f'detect error')
+        f = len(bboxes)
+        tf = str(True if label in preds else False)
+        t = f'{f:^15}{label:^20}{tf:^15}{acc/(i+1):^15.4}'
+        pbar.set_description(t)
 
-    if len(fails)>0:
-        print('='*15 + 'Fail list' + '='*15)
-        print(f'    Label\tPred')
-        pp(fails)
-        if detect_err:
-            print(f'Detect error = {detect_err}')
-            print(f'Accuract: {acc/(len(img_list)-detect_err)}')
+    # if len(fails)>0:
+    #     print('='*15 + 'Fail list' + '='*15)
+    #     print(f'    Label\tPred')
+    #     pp(fails)
+    #     if detect_err:
+    #         print(f'Detect error = {detect_err}')
+    #         print(f'Accuract: {acc/(len(img_list)-detect_err)}')
 
     print(f'Accuracy: {acc/len(img_list)}')
