@@ -10,6 +10,8 @@ import torch
 from model import l2_norm
 import pdb
 import cv2
+from tqdm import tqdm
+import time
 
 def separate_bn_paras(modules):
     if not isinstance(modules, list):
@@ -32,7 +34,7 @@ def prepare_facebank(conf, model, mtcnn, tta = True):
     model.eval()
     embeddings =  []
     names = ['Unknown']
-    for path in conf.facebank_path.iterdir():
+    for path in tqdm(conf.facebank_path.iterdir()):
         if path.is_file():
             continue
         else:
@@ -46,7 +48,10 @@ def prepare_facebank(conf, model, mtcnn, tta = True):
                     except:
                         continue
                     if img.size != (112, 112):
-                        img = mtcnn.align(img)
+                        try:
+                            img = mtcnn.align(img)
+                        except:
+                            continue
                     with torch.no_grad():
                         if tta:
                             mirror = trans.functional.hflip(img)
@@ -146,8 +151,17 @@ def draw_box_name(bbox,name,frame):
                     name,
                     (bbox[0],bbox[1]), 
                     cv2.FONT_HERSHEY_SIMPLEX, 
-                    2,
+                    0.7,
                     (0,255,0),
-                    3,
+                    2,
                     cv2.LINE_AA)
     return frame
+
+def logging_time(original_fn):
+    def wrapper_fn(*args, **kwargs):
+        start_time = time.time()
+        result = original_fn(*args, **kwargs)
+        end_time = time.time()
+        print("WorkingTime[{}]: {} sec".format(original_fn.__name__, end_time-start_time))
+        return result
+    return wrapper_fn

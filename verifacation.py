@@ -31,6 +31,8 @@ from scipy import interpolate
 import datetime
 import mxnet as mx
 
+from PIL import Image
+
 def calculate_roc(thresholds, embeddings1, embeddings2, actual_issame, nrof_folds=10, pca=0):
     assert (embeddings1.shape[0] == embeddings2.shape[0])
     assert (embeddings1.shape[1] == embeddings2.shape[1])

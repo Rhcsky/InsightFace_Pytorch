@@ -4,7 +4,7 @@ from torch.autograd import Variable
 from .get_nets import PNet, RNet, ONet
 from .box_utils import nms, calibrate_box, get_image_boxes, convert_to_square
 from .first_stage import run_first_stage
-
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def detect_faces(image, min_face_size=20.0,
                  thresholds=[0.6, 0.7, 0.8],
@@ -22,9 +22,9 @@ def detect_faces(image, min_face_size=20.0,
     """
 
     # LOAD MODELS
-    pnet = PNet()
-    rnet = RNet()
-    onet = ONet()
+    pnet = PNet().to(device)
+    rnet = RNet().to(device)
+    onet = ONet().to(device)
     onet.eval()
 
     # BUILD AN IMAGE PYRAMID

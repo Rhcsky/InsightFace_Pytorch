@@ -72,10 +72,11 @@ def get_val_pair(path, name):
     return carray, issame
 
 def get_val_data(data_path):
-    agedb_30, agedb_30_issame = get_val_pair(data_path, 'agedb_30')
-    cfp_fp, cfp_fp_issame = get_val_pair(data_path, 'cfp_fp')
+    # agedb_30, agedb_30_issame = get_val_pair(data_path, 'agedb_30')
+    # cfp_fp, cfp_fp_issame = get_val_pair(data_path, 'cfp_fp')
     lfw, lfw_issame = get_val_pair(data_path, 'lfw')
-    return agedb_30, cfp_fp, lfw, agedb_30_issame, cfp_fp_issame, lfw_issame
+    # return agedb_30, cfp_fp, lfw, agedb_30_issame, cfp_fp_issame, lfw_issame
+    return lfw,lfw_issame
 
 def load_mx_rec(rec_path):
     save_path = rec_path/'imgs'
