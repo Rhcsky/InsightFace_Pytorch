@@ -38,12 +38,14 @@ if __name__ == '__main__':
     parser.add_argument("-tta", "--tta", help="whether test time augmentation",action="store_true")
     parser.add_argument("-c", "--score", help="whether show the confidence score",action="store_true")
     parser.add_argument("-d", "--image_dir", type=str, help="dir of verification picture", required=True)
+    parser.add_argument("-f", "--facebank", type=str, help="dir of facebank picture", defaluts='facebank2', required=True)
+    
     args = parser.parse_args()
 
     conf = get_config(False)
     mtcnn = load_MTCNN()
     learner = load_Learner(conf,args)
-    conf.facebank_path = conf.data_path/'facebank2'
+    conf.facebank_path = conf.data_path/args.facebank
 
     start = time.time()
     if args.update:
@@ -93,11 +95,11 @@ if __name__ == '__main__':
             fails.append([label,ex])
             detect_err += 1
             # print(f'detect error')
+
         f = len(bboxes)
         tf = str(True if label in preds else False)
         t = f'{f:^15}{label:^20}{tf:^15}{acc/(i+1):^15.4}'
         pbar.set_description(t)
-
     # if len(fails)>0:
     #     print('='*15 + 'Fail list' + '='*15)
     #     print(f'    Label\tPred')
