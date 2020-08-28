@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 import os
-from checkface import recognize
+from insightface import recognize, updateFacebank
+import time
+import random as rand
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,12 +39,36 @@ def upload_page():
 
 @app.route("/android/inference",methods=["GET","POST"])
 def android_test():
+    start_time = time.time()
     imagefile = request.files['image']
     filename = BASE_DIR + '/uploads/' + secure_filename(imagefile.filename)
     imagefile.save(filename)
     name, frame = recognize(filename)
+    running_time = str(time.time() - start_time)
+    name += '/' + running_time
+    return name
+    
+@app.route("/android/uploadface",methods=["GET","POST"])
+def android_uploadface():
+    start = time.time()
+    username = request.form['username']
+    imagefile = request.files['image']
+    bank_dir = '/home/user/Project/ocr/InsightFace_Pytorch/data/facebank/' + str(username) + '/'
+
+    if os.path.exists(bank_dir) is False:
+        os.makedirs(bank_dir)
+
+    filename = bank_dir + str(rand.randint(0,1000)) + secure_filename(imagefile.filename)
+    imagefile.save(filename)
+    
+    running_time = str(time.time() - start)
+    name = str(username) + '/' + running_time
     return name
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
+@app.route("/android/updatebank",methods=["GET","POST"])
+def android_updatebank():
+    # updateFacebank()
+    return "SUCCESS"
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=80, debug=True)

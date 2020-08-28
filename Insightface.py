@@ -17,7 +17,6 @@ from tqdm import tqdm
 from glob import glob
 from easydict import EasyDict as edict
 
-
 class Insightface():
     def __init__(self):
         pass
