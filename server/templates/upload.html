@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+  <head>
+    <title>Upload</title>
+  </head>
+
+  <body>
+    <center><h1>Upload your selfie</h1></center>
+    <center><a href="/">Return first page</a><br><center>
+    <hr width="100%" color="black"/>
+
+    <img src="{{ url_for('static',filename='images/upload.png') }}", width="100" 
+        style="margin-left: auto; margin-right: auto; display: block;")/>
+
+    <br><br><center>
+    <form action = "" method = "POST"
+         enctype = "multipart/form-data">
+    <input type = "file" name = "file" />
+    <input type = "submit"/>
+    </form></center>
+  </body>
+</html>

@@ -33,12 +33,12 @@ def load_Learner(conf,args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='for face verification')
     parser.add_argument("-s", "--save", help="whether save",action="store_true")
-    parser.add_argument('-th','--threshold',help='threshold to decide identical faces',default=1.54, type=float)
+    parser.add_argument('-th','--threshold',help='threshold to decide identical faces',default=0.9, type=float)
     parser.add_argument("-u", "--update", help="whether perform update the facebank",action="store_true")
     parser.add_argument("-tta", "--tta", help="whether test time augmentation",action="store_true")
     parser.add_argument("-c", "--score", help="whether show the confidence score",action="store_true")
     parser.add_argument("-d", "--image_dir", type=str, help="dir of verification picture", required=True)
-    parser.add_argument("-f", "--facebank", type=str, help="dir of facebank picture", defaluts='facebank2', required=True)
+    parser.add_argument("-f", "--facebank", type=str, help="dir of facebank picture", default='facebank')
     
     args = parser.parse_args()
 
@@ -49,19 +49,21 @@ if __name__ == '__main__':
 
     start = time.time()
     if args.update:
-        targets, names = prepare_facebank(conf, learner.model, mtcnn, tta = args.tta)
+        targets, names = prepare_facebank(conf, learner.model, mtcnn, False)
         print('facebank updated')
     else:
         targets, names = load_facebank(conf)
         print('facebank loaded')
     print(f'WorkingTime[Load facebank]: {time.time()-start}')
 
+    print("Names")
+
     # list image directory
     img_list = glob(args.image_dir + '**/*.jpg')
     acc = 0
     detect_err=0
     fails = []
-    print(f"{'Found':^15}{'ID':^20}{'Result':^15}{'Score':^15}")
+    print(f"{'Found':^15}{'Name':^20}{'Result':^15}{'Score':^15}")
 
     pbar = enumerate(img_list)
     pbar = tqdm(pbar, total = len(img_list))
@@ -80,6 +82,7 @@ if __name__ == '__main__':
             bboxes = bboxes + [-1,-1,1,1] # personal choice    
             results, score = learner.infer(conf, faces, targets, args.tta)
             for idx,bbox in enumerate(bboxes):
+                # print(f'{label}-{names[results[idx]+1]}: {score[idx]}')
                 if args.score:
                     frame = draw_box_name(bbox, names[results[idx] + 1] + '_{:.2f}'.format(score[idx]), frame)
                 else:

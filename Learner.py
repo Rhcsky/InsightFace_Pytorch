@@ -61,6 +61,7 @@ class face_learner(object):
             # self.agedb_30, self.cfp_fp, self.lfw, self.agedb_30_issame, self.cfp_fp_issame, self.lfw_issame = get_val_data(self.loader.dataset.root.parent)
             self.lfw, self.lfw_issame = get_val_data(self.loader.dataset.root.parent)
         else:
+            self.model = torch.nn.DataParallel(self.model)
             self.threshold = conf.threshold
     
     def save_state(self, conf, accuracy, to_save_folder=False, extra=None, model_only=False):
